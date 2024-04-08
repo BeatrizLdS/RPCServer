@@ -17,12 +17,17 @@ class GameServiceStub(object):
         self.Connect = channel.unary_unary(
                 '/game.GameService/Connect',
                 request_serializer=game__pb2.User.SerializeToString,
-                response_deserializer=game__pb2.Empty.FromString,
-                )
-        self.StateStream = channel.unary_stream(
-                '/game.GameService/StateStream',
-                request_serializer=game__pb2.Empty.SerializeToString,
                 response_deserializer=game__pb2.GameState.FromString,
+                )
+        self.SendMove = channel.unary_unary(
+                '/game.GameService/SendMove',
+                request_serializer=game__pb2.Move.SerializeToString,
+                response_deserializer=game__pb2.Move.FromString,
+                )
+        self.GameStream = channel.unary_stream(
+                '/game.GameService/GameStream',
+                request_serializer=game__pb2.Empty.SerializeToString,
+                response_deserializer=game__pb2.Move.FromString,
                 )
 
 
@@ -35,7 +40,13 @@ class GameServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def StateStream(self, request, context):
+    def SendMove(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GameStream(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -47,12 +58,17 @@ def add_GameServiceServicer_to_server(servicer, server):
             'Connect': grpc.unary_unary_rpc_method_handler(
                     servicer.Connect,
                     request_deserializer=game__pb2.User.FromString,
-                    response_serializer=game__pb2.Empty.SerializeToString,
-            ),
-            'StateStream': grpc.unary_stream_rpc_method_handler(
-                    servicer.StateStream,
-                    request_deserializer=game__pb2.Empty.FromString,
                     response_serializer=game__pb2.GameState.SerializeToString,
+            ),
+            'SendMove': grpc.unary_unary_rpc_method_handler(
+                    servicer.SendMove,
+                    request_deserializer=game__pb2.Move.FromString,
+                    response_serializer=game__pb2.Move.SerializeToString,
+            ),
+            'GameStream': grpc.unary_stream_rpc_method_handler(
+                    servicer.GameStream,
+                    request_deserializer=game__pb2.Empty.FromString,
+                    response_serializer=game__pb2.Move.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -77,12 +93,12 @@ class GameService(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/game.GameService/Connect',
             game__pb2.User.SerializeToString,
-            game__pb2.Empty.FromString,
+            game__pb2.GameState.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 
     @staticmethod
-    def StateStream(request,
+    def SendMove(request,
             target,
             options=(),
             channel_credentials=None,
@@ -92,8 +108,25 @@ class GameService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.unary_stream(request, target, '/game.GameService/StateStream',
+        return grpc.experimental.unary_unary(request, target, '/game.GameService/SendMove',
+            game__pb2.Move.SerializeToString,
+            game__pb2.Move.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GameStream(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_stream(request, target, '/game.GameService/GameStream',
             game__pb2.Empty.SerializeToString,
-            game__pb2.GameState.FromString,
+            game__pb2.Move.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
