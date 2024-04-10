@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package game;
+
+message User {
+    string name = 1;
+}
+
+message GameState {
+    string state = 1;
+}
+
+message Move {
+    int32 moveFrom = 1;
+    int32 moveTo = 2;
+    int32 removed = 3;
+    
+    bool endGame = 4;
+    bool restartGame = 5;
+}
+
+message Empty {}
+
+service GameService {
+    rpc Connect(User) returns (GameState) {}
+
+    rpc SendMove(Move) returns (Move) {}
+    rpc GameStream(Empty) returns (stream Move) {}
+}
